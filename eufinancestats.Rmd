@@ -113,6 +113,8 @@ yields_euroarea <- bind_rows(yields_l) |>
 
 Data from [ECB API](https://data.ecb.europa.eu/help/api/).
 
+# Euro Area Government Bond Yields
+
 ```{r euroareabondyields}
 # iplot
 iplot_yields_euro <- yields_euroarea |> 
@@ -156,6 +158,14 @@ girafe(ggobj = iplot_yields_euro,
 ```
 
 Typically, lending money for longer periods of time is associated with higher interest rates. When shorter-term yields overtake longer-term yields, we speak of an inverted yield curve. Yield curve inversion is historically predictive of recessions.
+
+# Euro Area Key Interest Rates
+
+A
+
+```{r eurokeyinterest}
+
+```
 
 # Cite
 
