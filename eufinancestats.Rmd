@@ -101,12 +101,6 @@ yields_euroarea <- bind_rows(yields_l) |>
   select(DATA_TYPE_FM, TIME_PERIOD, OBS_VALUE, TITLE) |> 
   as_tibble()
 
-
-
-# ECB main refinancing rate
-
-# inflation
-
 ```
 
 <br>
@@ -161,11 +155,91 @@ Typically, lending money for longer periods of time is associated with higher in
 
 # Euro Area Key Interest Rates
 
-A
+The ECB's primary mandate is price stability. Its long-term inflation target is 2% (year-on-year).
 
 ```{r eurokeyinterest}
 
+## key ECB interest rate
+# construct URL
+url = str_c(
+  ecb_api,
+  "FM/B.U2.EUR.4F.KR.MRR_FR.LEV",
+  "?startPeriod=1998-01-01&",
+  "endPeriod=",
+  as.character(date_now),
+  "&format=csvdata"
+)
+
+# main refinancing operations
+key_interest_rate <- read.csv(url) |> 
+  select(TIME_PERIOD, OBS_VALUE, TITLE)
+
+## inflation
+# construct URL
+url = str_c(
+  ecb_api,
+  "ICP/M.U2.N.000000.4.ANR",
+  "?startPeriod=1998-01-01&",
+  "endPeriod=",
+  as.character(date_now),
+  "&format=csvdata"
+)
+
+# year-on-year inflation 
+inflation_rate <- read.csv(url) |> 
+  select(TIME_PERIOD, OBS_VALUE, TITLE) |> 
+  mutate(date = as.character(lubridate::ym(TIME_PERIOD)))
+
+# days
+days <- seq.Date(from = as.Date("1998-01-01"), to = date_now, by = "day")
+
+# interest rate and inflation
+rates <- tibble(date = as.character(days)) |> 
+  left_join(inflation_rate |> select(-TITLE, -TIME_PERIOD)) |> 
+  fill(OBS_VALUE) |> 
+  rename(inflation = OBS_VALUE) |> 
+  left_join(key_interest_rate |> select(-TITLE), by = c("date" = "TIME_PERIOD")) |> 
+  fill(OBS_VALUE) |> 
+  rename(ecb_rate = OBS_VALUE)
+
+# iplot
+iplot_rates <- rates |> 
+  pivot_longer(cols = -date) |> 
+  drop_na() |> 
+  mutate(tooltip = ifelse(name == "inflation", "Harmonised index of consumer prices, year-on-year change", "Interest rate on main refinancing operations")) |> 
+  ggplot(aes(x = as.Date(date), y = value)) +
+  geom_step_interactive(aes(color = name, tooltip = tooltip, data_id = name),
+                        linewidth = 0.25,
+                        show.legend = FALSE) +
+  geom_hline(yintercept = 2, lty = 2, color = "grey30") +
+  annotate(geom = "text", label = "2% target", x = as.Date("1997-01-01"), y = 2.3,
+           fontface = "italic", size = 3) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  scale_color_manual_interactive(values = c("#CDC7DD", "#758055")) +
+  theme_minimal() +
+  theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
+        strip.background = element_rect(fill = "grey95", color = "grey92"),
+        plot.title = element_text(face = "bold")) +
+  labs(x = NULL, y = "Rate",
+       title = "Key Interest Rate and Inflation",
+       subtitle = "Main refinancing operations and index of consumer prices")
+
+girafe(ggobj = iplot_rates,
+       fonts = list(sans = "Arial"),
+       #width_svg = 12,
+       #height_svg = 8,
+       options = list(opts_sizing(rescale = TRUE),
+                      opts_toolbar(saveaspng = FALSE),
+                      opts_tooltip(css = "background-color:gray;color:white;font-style:italic;padding:9px;border-radius:5px;font-size:15px;",
+                                   use_fill = TRUE),
+                      opts_hover_inv(css = "opacity:0.1;"),
+                      opts_hover(css = ""))
+)
+
 ```
+
+In times of rising inflation, the ECB's main countervailing instrument is increasing key interest rates.
 
 # Cite
 
