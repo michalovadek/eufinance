@@ -8,8 +8,8 @@ output:
     number_sections: true
     toc: true
     toc_float: true
-    theme: sandstone
-    highlight: espresso
+    theme: simplex
+    highlight: pygments
 ---
 
 <style>
