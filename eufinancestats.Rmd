@@ -8,7 +8,7 @@ output:
     number_sections: true
     toc: true
     toc_float: true
-    theme: simplex
+    theme: united
     highlight: pygments
 ---
 
@@ -126,7 +126,7 @@ iplot_yields_euro <- yields_euroarea |>
                         show.legend = FALSE) + 
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#98EDDF","#2D5C54","#5AB8A8")) +
-  theme_minimal() +
+  theme_minimal(base_family = "Arial") +
   theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
         strip.background = element_rect(fill = "grey95", color = "grey92"),
         plot.title = element_text(face = "bold")) +
@@ -217,7 +217,7 @@ iplot_rates <- rates |>
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#CDC7DD", "#758055")) +
-  theme_minimal() +
+  theme_minimal(base_family = "Arial") +
   theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
         strip.background = element_rect(fill = "grey95", color = "grey92"),
         plot.title = element_text(face = "bold")) +
