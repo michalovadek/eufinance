@@ -1,0 +1,162 @@
+---
+title: "Debt and Interest in the European Union"
+subtitle: "An Automatically Updated Overview of the EU's Finances"
+author: Dr Michal Ovádek
+output: 
+  html_document:
+    df_print: paged
+    number_sections: true
+    toc: true
+    toc_float: true
+    theme: sandstone
+    highlight: espresso
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+<style type="text/css">
+  body{
+  font-size: 13pt;
+}
+</style>
+
+<style>
+.tocify-extend-page {
+  height: 30px !important;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      error = FALSE,
+                      fig.width = 9,
+                      fig.height = 6)
+```
+
+
+```{r initialdata, include=FALSE}
+
+# packages
+library(ggplot2)
+library(ggforce)
+library(ggiraph)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(stringr)
+library(forcats)
+library(rmarkdown)
+library(modelsummary)
+library(DT)
+library(lubridate)
+
+# seed
+set.seed(35239)
+
+# current date
+date_now <- Sys.Date()
+date_now_f <- str_remove(format(date_now, "%d %B %Y"), "^0")
+day_now <- as.integer(str_sub(date_now, 9, 10))
+year_now <- as.integer(str_sub(date_now, 1, 4))
+
+# citation
+cit_page <- paste("Michal Ovádek, '",rmarkdown::metadata$title,"', available at https://michalovadek.github.io/eufinance/, accessed on ", date_now_f,
+                  sep = "")
+
+#### download data ####
+
+# ecb api url
+ecb_api <- "https://data-api.ecb.europa.eu/service/data/"
+
+# time period argument
+"startPeriod=2004-09-06&endPeriod=2023-12-31"
+
+# Euro area bond yields, spot rates
+yields_l <- list()
+
+# 1 year, 5 year, 10 year maturities
+for (Y in c(1, 5, 10)){
+  
+  # construct URL
+  url = str_c(
+  ecb_api,
+  "YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_",
+  Y,
+  "Y?startPeriod=2004-09-06&",
+  "endPeriod=",
+  as.character(date_now),
+  "&format=csvdata")
+  
+  yields_l[[as.character(Y)]] <- read.csv(url)
+  
+}
+
+# consolidate euro area yields
+yields_euroarea <- bind_rows(yields_l) |> 
+  select(DATA_TYPE_FM, TIME_PERIOD, OBS_VALUE, TITLE) |> 
+  as_tibble()
+
+
+
+# ECB main refinancing rate
+
+# inflation
+
+```
+
+<br>
+
+Data from [ECB API](https://data.ecb.europa.eu/help/api/).
+
+```{r euroareabondyields}
+# iplot
+iplot_yields_euro <- yields_euroarea |> 
+  mutate(tooltip = case_when(
+     DATA_TYPE_FM == "SR_1Y" ~ "1-year maturity",
+     DATA_TYPE_FM == "SR_5Y" ~ "5-year maturity",
+     DATA_TYPE_FM == "SR_10Y" ~ "10-year maturity",
+     T ~ NA_character_
+  )) |> 
+  ggplot(aes(x = as.Date(TIME_PERIOD), y = OBS_VALUE)) +
+  geom_line_interactive(aes(color = DATA_TYPE_FM,
+                            tooltip = tooltip,
+                            data_id = DATA_TYPE_FM), 
+                        linewidth = 0.2,
+                        show.legend = FALSE) + 
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  scale_color_manual_interactive(values = c("#98EDDF","#2D5C54","#5AB8A8")) +
+  theme_minimal() +
+  theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
+        strip.background = element_rect(fill = "grey95", color = "grey92"),
+        plot.title = element_text(face = "bold")) +
+  facet_zoom(xy = between(as.Date(TIME_PERIOD), date_now-365, date_now),
+             horizontal = FALSE,
+             zoom.size = 0.5) +
+  labs(x = NULL, y = "Yield",
+       title = "Euro Area Government Bond Yields",
+       subtitle = "Daily spot rates, triple A issuers only")
+
+# interactive
+girafe(ggobj = iplot_yields_euro,
+       fonts = list(sans = "Arial"),
+       #width_svg = 12,
+       #height_svg = 8,
+       options = list(opts_sizing(rescale = TRUE),
+                      opts_toolbar(saveaspng = FALSE),
+                      opts_tooltip(css = "background-color:gray;color:white;font-style:italic;padding:9px;border-radius:5px;font-size:15px;",
+                                   use_fill = TRUE),
+                      opts_hover_inv(css = "opacity:0.2;"),
+                      opts_hover(css = ""))
+)
+```
+
+Typically, lending money for longer periods of time is associated with higher interest rates. When shorter-term yields overtake longer-term yields, we speak of an inverted yield curve. Yield curve inversion is historically predictive of recessions.
+
+# Cite
+
+Cite this document as `r cit_page`.
