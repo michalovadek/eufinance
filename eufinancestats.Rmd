@@ -1,5 +1,5 @@
 ---
-title: "Debt and Interest in the European Union"
+title: "Borrowing and Yields in the European Union"
 subtitle: "An Automatically Updated Overview of the EU's Finances"
 author: Dr Michal Ovádek
 output: 
@@ -107,7 +107,7 @@ yields_euroarea <- bind_rows(yields_l) |>
 
 The European Union (EU) is not only a single market but also an economic and monetary union. Most EU members have a common currency -- the euro -- which entails a supranational monetary policy. The European Central Bank (ECB) manages the euro together with Euro Area central banks.
 
-This automatically updated document provides a real-time overview of a number of metrics that are central to economic and monetary policy in the EU. All data comes from the [ECB API](https://data.ecb.europa.eu/help/api/) and Eurostat. The document is current as of ```r date_now_f```.
+This automatically updated document provides a real-time overview of several indicators that are central to economic and monetary policy in the EU. All data comes from the [ECB API](https://data.ecb.europa.eu/help/api/) and Eurostat. The document is current as of ```r date_now_f```.
 
 # Euro Area Government Bond Yields
 
@@ -190,6 +190,14 @@ cur_min_yld <- pdata_govb10y |>
   ungroup() |> 
   slice_min(values)
 
+# EA and non-EA average
+non_euro_ylds_avg <- pdata_govb10y |> 
+  filter(geo %in% c("CZ","PL","HU","RO","BG","SE","DK")) |> 
+  summarise(mean = round(mean(values), 2))
+
+euro_ylds_avg <- filter(gov_b10yields, geo == "EA") |> 
+  summarise(mean = round(mean(values), 2))
+
 # iplot
 iplot_govylds <- pdata_govb10y |> 
   ggplot() +
@@ -233,7 +241,9 @@ girafe(ggobj = iplot_govylds,
 
 ```
 
-As most government borrowing in the EU takes place at the national level, bond yields vary not only over time but also systematically by country. At the moment, yields are highest on bonds issued by ```r cur_max_yld$name```. Last month they traded with a yield of ```r cur_max_yld$values```%. In contrast, ```r cur_min_yld$name``` has the lowest yields at ```r cur_min_yld$values```%.
+As most government borrowing in the EU takes place at the national level, bond yields vary not only over time but also systematically by country. At the moment, yields are highest on bonds issued by ```r cur_max_yld$name```. Last month they traded at a yield of ```r cur_max_yld$values```%. In contrast, ```r cur_min_yld$name```'s bonds had the lowest yield at ```r cur_min_yld$values```%.
+
+Bond yields are indicative of the cost of government borrowing and as such play a major role in debates about the benefits of adopting the euro as a currency. Over the last year, 10-year bonds in the Euro Area had an average yield of ```r euro_ylds_avg```%, while EU members that do not use the euro averaged a yield of ```r non_euro_ylds_avg```%. This simplistic comparison is confounded by the uneven composition of the two groups in terms of macroeconomic stability, but it can be instructive to compare relatively similar countries in different regions (e.g. Czechia and Slovakia or Finland and Sweden).
 
 # Euro Area Key Interest Rates
 
@@ -295,8 +305,8 @@ iplot_rates <- rates |>
   geom_step_interactive(aes(color = name, tooltip = tooltip, data_id = name),
                         linewidth = 0.29,
                         show.legend = FALSE) +
-  annotate(geom = "text", label = "2% inflation target", x = as.Date("1997-01-01"), y = 2.3,
-           fontface = "italic", size = 2.7) +
+  annotate(geom = "text", label = "2% inflation target", x = as.Date("1997-11-01"), y = 2.3,
+           fontface = "italic", size = 2.6) +
   #scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#CDC7FD", "#758055")) +
