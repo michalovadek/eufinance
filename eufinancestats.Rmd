@@ -243,7 +243,7 @@ girafe(ggobj = iplot_govylds,
 
 As most government borrowing in the EU takes place at the national level, bond yields vary not only over time but also systematically by country. At the moment, yields are highest on bonds issued by ```r cur_max_yld$name```. Last month they traded at a yield of ```r cur_max_yld$values```%. In contrast, ```r cur_min_yld$name```'s bonds had the lowest yield at ```r cur_min_yld$values```%.
 
-Bond yields are indicative of the cost of government borrowing and as such play a major role in debates about the benefits of adopting the euro as a currency. Over the last year, 10-year bonds in the Euro Area had an average yield of ```r euro_ylds_avg```%, while EU members that do not use the euro averaged a yield of ```r non_euro_ylds_avg```%. This simplistic comparison is confounded by the uneven composition of the two groups in terms of macroeconomic stability, but it can be instructive to compare relatively similar countries in different regions (e.g. Czechia and Slovakia or Finland and Sweden).
+Bond yields are indicative of the cost of government borrowing and as such play a major role in debates about the benefits of adopting the euro as a currency. Over the last year, 10-year bonds in the Euro Area had an average yield of ```r euro_ylds_avg$mean```%, while EU members that do not use the euro averaged a yield of ```r non_euro_ylds_avg$mean```%. This simplistic comparison is confounded by the uneven composition of the two groups in terms of macroeconomic stability, but it can be instructive to compare relatively similar countries in different regions (e.g. Czechia and Slovakia or Finland and Sweden).
 
 # Euro Area Key Interest Rates
 
@@ -305,8 +305,7 @@ iplot_rates <- rates |>
   geom_step_interactive(aes(color = name, tooltip = tooltip, data_id = name),
                         linewidth = 0.29,
                         show.legend = FALSE) +
-  annotate(geom = "text", label = "2% inflation target", x = as.Date("1997-11-01"), y = 2.3,
-           fontface = "italic", size = 2.6) +
+  annotate(geom = "text", label = "2% inflation target", x = as.Date("1997-11-01"), y = 2.4, size = 2.1) +
   #scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#CDC7FD", "#758055")) +
