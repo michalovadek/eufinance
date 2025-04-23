@@ -40,6 +40,23 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get install -y libpng-dev
 
+      - name: Update system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install -y build-essential
+          sudo apt-get install -y libpng-dev
+          sudo apt-get install -y libjpeg-dev
+          sudo apt-get install -y libfontconfig1-dev
+          sudo apt-get install -y libfreetype6-dev
+
+      - name: Update digest package
+        run: |
+          Rscript -e 'install.packages("digest", repos = "https://cloud.r-project.org")'
+    
       - uses: r-lib/actions/setup-renv@v2
       
       - name: Render Rmd file
@@ -63,4 +80,3 @@ jobs:
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git commit ${RMD_PATH[*]/.Rmd/.md} -m 'Re-build Rmarkdown files' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
-          
