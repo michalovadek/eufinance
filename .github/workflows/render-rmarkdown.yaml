@@ -38,24 +38,20 @@ jobs:
         shell: Rscript {0}
 
       - name: Install system dependencies
-        run: sudo apt-get install -y libpng-dev
-
-      - name: Update system packages
-        run: |
-          sudo apt-get update
-          sudo apt-get upgrade -y
-
-      - name: Install system dependencies
         run: |
           sudo apt-get install -y build-essential
           sudo apt-get install -y libpng-dev
           sudo apt-get install -y libjpeg-dev
           sudo apt-get install -y libfontconfig1-dev
           sudo apt-get install -y libfreetype6-dev
+          sudo apt-get install -y libcairo2-dev
+          sudo apt-get install -y libx11-dev
+          sudo apt-get install -y pandoc
 
-      - name: Update digest package
+      - name: Update system packages
         run: |
-          Rscript -e 'install.packages("digest", repos = "https://cloud.r-project.org")'
+          sudo apt-get update
+          sudo apt-get upgrade -y
     
       - uses: r-lib/actions/setup-renv@v2
       
