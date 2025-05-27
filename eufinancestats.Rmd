@@ -61,8 +61,8 @@ library(gfonts)
 set.seed(35239)
 
 # fonts
-register_gfont("Open Sans")
-addGFontHtmlDependency(family = "Open Sans")
+gdtools::register_liberationsans()
+#addGFontHtmlDependency(family = "Open Sans")
 
 # current date
 date_now <- Sys.Date()
@@ -137,7 +137,7 @@ iplot_yields_euro <- yields_euroarea |>
                         show.legend = FALSE) + 
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#98EDDF","#2D5C54","#5AB8A8")) +
-  theme_minimal(base_family = "Open Sans") +
+  theme_minimal(base_family = "Liberation Sans") +
   theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
         strip.background = element_rect(fill = "grey95", color = "grey92"),
         plot.title = element_text(face = "bold")) +
@@ -150,7 +150,8 @@ iplot_yields_euro <- yields_euroarea |>
 
 # interactive
 girafe(ggobj = iplot_yields_euro,
-       fonts = list(sans = "Open Sans"),
+       dependencies = gdtools::liberationsansHtmlDependency(),
+       #fonts = list(sans = "Open Sans"),
        #width_svg = 12,
        #height_svg = 8,
        options = list(opts_sizing(rescale = TRUE),
@@ -221,7 +222,7 @@ iplot_govylds <- pdata_govb10y |>
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_x_date(date_breaks = "month", labels = function(z) gsub("^0", "", strftime(z, "%m"))) +
   facet_wrap(~name) +
-  theme_minimal(base_family = "sans") +
+  theme_minimal(base_family = "Liberation Sans") +
   theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
         strip.background = element_blank(),
         strip.text = element_text(hjust = 1, face = "bold"),
@@ -234,7 +235,8 @@ iplot_govylds <- pdata_govb10y |>
 
 # interactive
 girafe(ggobj = iplot_govylds,
-       fonts = list(sans = "Open Sans"),
+       dependencies = gdtools::liberationsansHtmlDependency(),
+       #fonts = list(sans = "Open Sans"),
        #width_svg = 12,
        #height_svg = 8,
        options = list(opts_sizing(rescale = TRUE),
@@ -315,7 +317,7 @@ iplot_rates <- rates |>
   #scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   scale_color_manual_interactive(values = c("#CDC7FD", "#758055")) +
-  theme_minimal(base_family = "sans") +
+  theme_minimal(base_family = "Liberation Sans") +
   theme(panel.grid = element_line(color = "grey96", linewidth = 0.2),
         strip.background = element_rect(fill = "grey95", color = "grey92"),
         plot.title = element_text(face = "bold")) +
@@ -327,7 +329,8 @@ iplot_rates <- rates |>
        subtitle = "Main refinancing operations and index of consumer prices")
 
 girafe(ggobj = iplot_rates,
-       fonts = list(sans = "Open Sans"),
+       dependencies = gdtools::liberationsansHtmlDependency(),
+       #fonts = list(sans = "Open Sans"),
        #width_svg = 12,
        #height_svg = 8,
        options = list(opts_sizing(rescale = TRUE),
